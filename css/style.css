@@ -1,0 +1,333 @@
+html {
+    background-color: #696969
+}
+
+body {
+    overflow: hidden;
+}
+
+table {
+    border-spacing: 0 0;
+    empty-cells: show;
+    table-layout: fixed;
+}
+
+table, table tr, table td, div {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+/*Main Position Design*/
+#dTop {
+    top: 0;
+    height: 40px;
+    width: 100%;
+    position: absolute;
+}
+
+#dCenter {
+    top: 40px;
+    bottom: 43px;
+    width: 100%;
+    position: absolute;
+}
+
+#dBottom {
+    bottom: 0;
+    height: 40px;
+    width: 100%;
+    position: absolute;
+}
+
+/*dCenter Poistion Design*/
+#palette {
+    left: 0;
+    height: 100%;
+    width: 120px;
+    display: inline-block;
+    position: absolute;
+}
+
+#field {
+    left: 123px;
+    right: 300px;
+    height: 100%;
+    position: absolute;
+}
+
+#manager {
+    right: 0;
+    height: 100%;
+    width: 300px;
+    position: absolute;
+}
+
+/*field Position Design*/
+#mapField {
+    position: absolute;
+    overflow: scroll;
+    background-color: black;
+    width: 100%;
+    top: 0;
+    bottom: 340px;
+}
+
+#zoom {
+    right: 350px;
+    top: 50px;
+    position: fixed;
+}
+
+#zoom div {
+    border-radius: 3px;
+    height: 20px;
+    width: 20px;
+    background-color: #DDD;
+    border: 1px solid black;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: larger;
+    font-weight: bold;
+    padding: 0;
+    cursor: pointer;
+}
+
+#zoom div:hover {
+    background-color: deepskyblue;
+}
+
+#textField {
+    position: absolute;
+    height: 300px;
+    bottom: 40px;
+    width: 100%;
+    overflow: scroll;
+}
+
+#textInput {
+    width: 100%;
+    height: 40px;
+    bottom: 0;
+    position: absolute;
+}
+
+/*toolBar Design*/
+.toolBar {
+    background-color: white;
+    opacity: 1;
+    z-index: 1;
+    border: 2px solid #FFFFFF;
+}
+
+.toolBar table {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.toolTitle {
+    font-family: 黑体;
+    color: deepskyblue;
+    font-size: large;
+}
+
+.tool{
+    height: 36px;
+    width: 36px;
+    text-align: center;
+    line-height: 36px;
+    border: 1px solid #DDD;
+}
+
+.tool:hover {
+    border: 1px solid black;
+    background-color: deepskyblue;
+}
+
+.selectedTool {
+    background-color: deepskyblue;
+}
+
+.invisibleMenu {
+    position: fixed;
+    left: inherit;
+    top: inherit;
+    display: none;
+}
+
+/*tool: Color*/
+#color {
+    background-color: #FFF;
+    color: #000;
+}
+
+#colorMenu td {
+    height: 32px;
+    width: 32px;
+    border: 1px solid black;
+}
+
+/*tool: Character*/
+#inputCharacter {
+    position: fixed;
+    left: inherit;
+    top: inherit;
+    margin-top: -20px;
+    margin-left: 36px;
+    display: none;
+}
+
+/*tool: Tool Size*/
+#toolSizeMenu td {
+    height: 32px;
+    width: 32px;
+    border: 1px solid #DDD;
+    background-color: #f0f0f0;
+}
+
+#toolSizeMenu td:hover {
+    background-color: deepskyblue;
+    border: 1px solid black;
+}
+
+/*tool: Effect Shape*/
+#effectShape td {
+    height: 32px;
+    width: 32px;
+    border: 1px solid #DDD;
+    background-color: #f0f0f0;
+}
+
+#effectShape td:hover {
+    background-color: deepskyblue;
+    border: 1px solid black;
+}
+
+.selectedShape {
+    background-color: deepskyblue;
+}
+
+.selectedRotate {
+    background-color: deepskyblue;
+}
+
+/*statusViewer Design*/
+#statusViewer {
+    height: 40px;
+    border-collapse: collapse;
+}
+
+#statusViewer td {
+    height: 18px;
+    border: 1px solid black;
+}
+
+#hint {
+    font-size: smaller;
+}
+
+#currentForeColor {
+    left: 3px;
+    bottom: 0px;
+    height: 13px;
+    width: 20px;
+    background-color: #000;
+}
+
+#currentBackColor {
+    width: 40px;
+    table-layout: fixed;
+    background-color: #FFF;
+}
+
+#currentCoordinate {
+    width: 80px;
+    table-layout: fixed;
+}
+
+#status {
+    width: 600px;
+}
+
+/*Map Design*/
+#map {
+    background-color: #FFF;
+    border: 4px ridge #888;
+    font-family: monospace;
+    cursor: cell;
+}
+
+#map td {
+    min-height: 20px;
+    height: 20px;
+    max-height: 20px;
+    min-width: 20px;
+    width: 20px;
+    max-width: 20px;
+    margin: 0;
+    overflow: hidden;
+    text-align: center;
+    vertical-align: middle;
+    border: 1px solid #f0f0f0;
+    table-layout: fixed;
+}
+
+.masked {
+    width: inherit;
+    height: inherit;
+    position: inherit;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background-color: blue;
+    opacity: 0.3;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Layer */
+.layer {
+    border: 1px solid gray;
+}
+
+.selectedLayer {
+    border: 1px solid black;
+    background-color: deepskyblue;
+}
+
+.invisibleLayer {
+    border: 1px solid dimgrey;
+    background-color: #888888;
+}
+
+.invisibleSelectedLayer {
+    border: 1px solid black;
+    background-color: #BBB;
+}
+
+/* WindowForm */
+#window {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+    display: none;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+#window td {
+    text-align: center;
+    vertical-align: middle;
+}
+
+#window > tbody > tr > td > div[id] {
+    margin: 0 auto;
+    background-color: #DDD;
+    display: block;
+    padding: 2em;
+    max-width: 400px;
+    border: 2px ridge #DDD;
+    display: none;
+}

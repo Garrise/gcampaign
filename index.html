@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Garrise's Campaign Designer</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css"/>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+    <script type="text/javascript" src="js/model.js"></script>
+    <script type="text/javascript" src="js/tool.js"></script>
+    <script type="text/javascript" src="js/controller.js"></script>
+    <script type="text/javascript" src="js/saveLoad.js"></script>
+</head>
+<body>
+    <div id="dTop">
+        <div id="fileManager" class="toolBar">
+            <table>
+                <tr>
+                    <td id="register" class="tool">注册</td>
+                    <td id="login" class="tool">登陆</td>
+                    <td id="save" class="tool">存取</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div id="dCenter">
+        <div id="palette" class="toolBar">
+            <br>
+            <span class="toolTitle">选择工具</span>
+            <table id="selectBox">
+                <tr>
+                    <td id="selectTool" class="tool">选</td>
+                    <td id="moveTool" class="tool">移</td>
+                </tr>
+            </table>
+            <br>
+            <span class="toolTitle">绘图工具</span>
+            <table id="toolBox">
+                <tr>
+                    <td id="drawer" class="tool selectedTool"><span>画</span></td>
+                    <td id="eraser" class="tool"><span>擦</span></td>
+                </tr>
+                <tr>
+                    <td id="character" class="tool"><span></span>
+                        <input id="inputCharacter" type="text" />
+                    </td>
+                    <td id="color" class="tool"><span>色</span>
+                        <table id="colorMenu" class="invisibleMenu">
+                            <tr>
+                                <td id="black" style="background-color: black"></td>
+                                <td id="gray" style="background-color: gray"></td>
+                                <td id="red" style="background-color: red"></td>
+                                <td id="orange" style="background-color: orange"></td>
+                                <td id="yellow" style="background-color: yellow"></td>
+                            </tr>
+                            <tr>
+                                <td id="green" style="background-color: green"></td>
+                                <td id="blue" style="background-color: blue"></td>
+                                <td id="violet" style="background-color: violet"></td>
+                                <td id="purple" style="background-color: purple"></td>
+                                <td id="white" style="background-color: white"></td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td id="toolSize" class="tool"><span>长</span>
+                        <table id="toolSizeMenu" class="invisibleMenu">
+                            <tr>
+                                <td id="small"><span>小</span></td>
+                                <td id="middle"><span>中</span></td>
+                                <td id="large"><span>大</span></td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <span class="toolTitle">地图效应</span>
+            <table id="mapEffect">
+                <td id="effect" class="tool"><span>效</span></td>
+                <td id="shape" class="tool"><span>形</span>
+                    <table id="effectShape" class="invisibleMenu">
+                        <tr>
+                            <td id="cone" class="selectedShape"><span>锥</span></td>
+                            <td id="circle"><span>圆</span></td>
+                        </tr>
+                        <tr>
+                            <td id="leftTop" class="selectedRotate"><span>↖</span></td>
+                            <td id="top"><span>↑</span></td>
+                            <td id="rightTop"><span>↗</span></td>
+                        </tr>
+                        <tr>
+                            <td id="left"><span>←</span></td>
+                            <td><span></span></td>
+                            <td id="right"><span>→</span></td>
+                        </tr>
+                        <tr>
+                            <td id="leftBottom"><span>↙</span></td>
+                            <td id="bottom"><span>↓</span></td>
+                            <td id="rightBottom"><span>↘</span></td>
+                        </tr>
+                        <tr>
+                            <td id="smaller"><span>-</span></td>
+                            <td id="effectSize"><span>15</span>尺</td>
+                            <td id="larger"><span>+</span></td>
+                        </tr>
+                    </table>
+                </td>
+                <td id="ruler" class="tool"><span>尺</span></td>
+            </table>
+        </div>
+        <div id="field">
+            <div id="mapField">
+                <table id="map"></table>
+                <div id="zoom">
+                    <div id="zoomOut">+</div>
+                    <div id="zoomIn">-</div>
+                </div>
+            </div>
+            <div id="textField"></div>
+            <div id="textInput">
+                <input type="text" />
+            </div>
+        </div>
+        <div id="manager" class="toolBar">
+            <table id="layerBox">
+                <tr>
+                    <td id="addLayer" class="tool">加</td>
+                    <td id="removeLayer" class="tool">删</td>
+                    <td id="upLayer" class="tool">上</td>
+                    <td id="downLayer" class="tool">下</td>
+                </tr>
+            </table>
+            <div id="layer">
+            </div>
+        </div>
+    </div>
+    <div id="dBottom">
+        <table id="statusViewer" class="toolBar">
+            <tr>
+                <td id="hint" colspan="3">左键：绘制背景，ctrl+左键：绘制文字，shift+左键：绘制背景与文字，按下Enter修改文字</td>
+            </tr>
+            <tr>
+                <td id="currentBackColor">
+                    <div id="currentForeColor"></div>
+                </td>
+                <td id="currentCoordinate"></td>
+                <td id="status"></td>
+            </tr>
+        </table>
+    </div>
+    <table id="window">
+        <tr>
+            <td>
+                <div id="win_saveLoad">
+                    <table>
+                        <tr>
+                            <td>
+                                <label>储存名称：</label>
+                                <input id="saveName" name="saveName" type="text" />
+                                <input id="saveButton" name="loadButton" type="button" value="提交" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label>读取名称：</label>
+                                <input id="loadName" name="loadName" type="text" />
+                                <input id="loadButton" name="loadButton" type="button" value="提交" />
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
