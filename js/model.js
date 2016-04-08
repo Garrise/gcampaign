@@ -23,7 +23,8 @@ Map = {
     currentText: '',
     currentForeColor: 'rgb(0, 0, 0)',
     currentBackColor: 'rgb(255, 255, 255)',
-    cellSide: '50px',
+    cellSide: '40px',
+    fontSize: '20px',
     table: '#map',
     background: 'rgb(255, 255, 255)',
     border: '4px ridge #888',
@@ -38,6 +39,7 @@ Map = {
         this.width = width;
         this.height = height;
         this.cellSide = cellSide;
+        this.fontSize = parseInt(cellSide) / 2;
         var td = this.table + ' td';
         var lastRow = null;
         for (var y = 0; y < height; y++) {
@@ -52,6 +54,7 @@ Map = {
         $(td).css("height", cellSide);
         $(td).css("min-height", cellSide);
         $(td).css("max-height", cellSide);
+        $(td).css("font-size", parseInt(cellSide) / 2);
     },
 
     createCellRow: function(tr, y, lastRow) {
@@ -278,26 +281,34 @@ Map = {
     },
     zoom: function(type) {
         var side = parseInt(this.cellSide);
+        var size = parseInt(this.fontSize);
         switch (type) {
             case 'out':
-                side += 5;
+                side += 6;
+                size += 3;
                 break;
             case 'in':
-                side -= 5;
+                side -= 6;
+                size -= 3;
                 break;
         }
         this.cellSide = side + 'px';
+        this.fontSize = size + 'px';
         this.zoomRefresh();
     },
     zoomRefresh: function() {
         for (var y = 0; y < this.height; y++) {
             for (var x = 0; x < this.width; x++) {
-                this.cells[y][x].$td.css('width', this.cellSide);
-                this.cells[y][x].$td.css('height', this.cellSide);
-                this.cells[y][x].$td.css('min-width', this.cellSide);
-                this.cells[y][x].$td.css('min-height', this.cellSide);
-                this.cells[y][x].$td.css('max-width', this.cellSide);
-                this.cells[y][x].$td.css('max-height', this.cellSide);
+                var td = this.cells[y][x].$td;
+                var side = this.cellSide;
+                var size = this.fontSize;
+                td.css('width', side);
+                td.css('height', side);
+                td.css('min-width', side);
+                td.css('min-height', side);
+                td.css('max-width', side);
+                td.css('max-height', side);
+                td.css('font-size', size);
             }
         }
     },
