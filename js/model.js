@@ -498,6 +498,7 @@ Cell.prototype = {
     /* Status Border */
     setBorder: function() {
         var border = this.getBorder(this.topCell);
+        var noneBorder = this.border.none;
         if (border != this.borderTop) {
             this.borderTop = border;
             this.$td.css("border-top", border);
@@ -597,32 +598,146 @@ Cell.prototype = {
 History = {
     logs: [],
     logIndex: 0,
-    cancel: function() {
-        this.logIndex--;
-        var historyLog = this.logs[this.logIndex];
-        var originCells = historyLog.originCells;
-        var newCells = historyLog.newCells;
-        for ()
+    createHistory: function(name) {
+        if ($('#layer').has('.selectedLayer').length) {
+            var historyLog =  new HistoryLog(name);
+            historyLog.layerLevel = $('.selectedLayer').index();
+            this.logs.push(historyLog);
+            this.logIndex++;
+            var $history = $('#history');
+            if ($history.has('.selectedLog').length) {
+                $history.find('.selectedLog').removeClass('selectedLog');
+            }
+            var $log = $('<div class="historyLog selectedLog"></div>');
+            $log.text(name);
+            $history.prepend($log);
+        }
+    },
+    clearHistory: function() {
+        if ($('#layer').has('.selectedLayer').length) {
+            while (this.logIndex != this.logs.length) {
+                this.logs.pop()
+            }
+            var $history = $('#history');
+            if ($history.has('.cancelledLog').length) {
+                var $cancelledLog = $('.cancelledLog');
+                $cancelledLog.remove();
+            }
+        }
+    },
+    undo: function() {
+        if (this.logIndex == 0) {
+            return false;
+        } else {
+            this.logIndex--;
+            var historyLog = this.logs[this.logIndex];
+            var originCells = historyLog.originCells;
+            var newCells = historyLog.newCells;
+            var layerLevel = historyLog.layerLevel;
+            this.deleteCells(newCells, layerLevel);
+            this.revertCells(originCells, layerLevel);
+            var $selected = $('.selectedLog');
+            var $newSelected = $selected.next();
+            $selected.removeClass('selectedLog').addClass('cancelledLog');
+            $newSelected.addClass('selectedLog');
+            return true;
+        }
+    },
+    redo: function() {
+        if (this.logIndex == this.logs.length) {
+            return false;
+        } else {
+            var historyLog = this.logs[this.logIndex];
+            var originCells = historyLog.originCells;
+            var newCells = historyLog.newCells;
+            var layerLevel = historyLog.layerLevel;
+            this.deleteCells(originCells, layerLevel);
+            this.revertCells(newCells, layerLevel);
+            this.logIndex++;
+            var $selected = $('.selectedLog');
+            var $newSelected = $selected.prev();
+            $selected.removeClass('selectedLog').removeClass('cancelledLog');
+            $newSelected.addClass('selectedLog');
+            return true;
+        }
+    },
+    select: function(index) {
+        if (index > this.logIndex) {
+            for (var i = this.logIndex; i < index; i++) {
+                this.redo();
+            }
+        } else if (index < this.logIndex) {
+            for (i = this.logIndex; i > index; i--) {
+                this.undo();
+            }
+        }
+        this.logIndex = index;
+    },
+    deleteCells: function(cells, layerLevel) {
+        for (var i = 0; i < cells.length; i++) {
+            var x = cells[i].x;
+            var y = cells[i].y;
+            if (Map.layers[layerLevel].getCell(x, y)) {
+                Map.layers[layerLevel].deleteCell(x, y);
+            }
+            Map.refreshCell(x, y);
+        }
+    },
+    revertCells: function(cells, layerLevel) {
+        for (var  i = 0; i < cells.length; i++) {
+            var x = cells[i].x;
+            var y = cells[i].y;
+            if (cells[i].empty) {
+                continue;
+            } else {
+                var cell = Map.layers[layerLevel].createCell(x, y);
+                if (layerLevel == 0) {
+                    cell.level = cells[i].level;
+                } else {
+                    cell.text = cells[i].text;
+                    cell.foreColor = cells[i].foreColor;
+                    cell.backColor = cells[i].backColor;
+                }
+            }
+            Map.refreshCell(x, y);
+        }
     }
 };
 function HistoryLog(name) {
     this.name = name;
+    this.layerLevel = undefined;
+    this.originCells = [];
+    this.newCells = [];
+    this.visitedArea = [];
+    this.addOrigin = function (x, y) {
+        var area = this.visitedArea;
+        if (!this.getVisited(x, y)) {
+            this.originCells.push(new HistoryCell(Map.currentLayer.getCell(x, y), x, y));
+            this.setVisited(x, y);
+        }
+    };
+    this.addNew = function (x, y) {
+        this.newCells.push(new HistoryCell(Map.currentLayer.getCell(x, y), x, y));
+    };
+    this.setVisited = function(x, y) {
+        var area = this.visitedArea;
+        if (!area[y]) {
+            area[y] = [];
+        }
+        area[y][x] = true;
+    };
+    this.getVisited = function(x, y) {
+        var area = this.visitedArea;
+        if (area[y]) {
+            return area[y][x];
+        }
+        return null;
+    }
 }
-HistoryLog.prototype = {
-    name: undefined,
-    originCells: [],
-    newCells: [],
-    addOrigin: function (cell) {
-        this.originCells.push(new HistoryCell(cell));
-    },
-    addNew: function (cell) {
-        this.newCells.push(new HistoryCell(cell));
-    },
-};
-function HistoryCell(cell) {
+function HistoryCell(cell, x, y) {
+    this.x = x;
+    this.y = y;
     if (cell) {
-        this.x = cell.x;
-        this.y = cell.y;
         if (Map.currentLayer.name == 'SHADOW') {
             this.level = cell.level;
         } else {

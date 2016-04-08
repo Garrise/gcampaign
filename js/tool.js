@@ -117,58 +117,65 @@ function Drawer() {
         if (!Map.currentLayer.visible) {
             return;
         }
+        var historyLog = History.logs[History.logIndex - 1];
         if (Map.currentLayer.name == 'SHADOW') {
-            if (e.ctrlKey) {
-                for (var i = 0; i < Map.marked.length; i++) {
-                    var x = Map.marked[i][0];
-                    var y = Map.marked[i][1];
-                    Map.currentLayer.createCell(x, y).level = -1; // ctrl: Low-Light
-                    Map.refreshCell(x, y)
-                }
-            } else if (e.shiftKey) {
+            if (e.shiftKey) {
                 for (y = 0; y < Map.height; y++) {
                     for (x = 0; x < Map.width; x++) {
-                        Map.currentLayer.createCell(x, y).level = -2;
+                        historyLog.addOrigin(x, y);
+                        var cell = Map.currentLayer.createCell(x, y);
+                        cell.level = -2;
                         Map.refreshCell(x, y);
+                        historyLog.addNew(x, y);
                     }
                 }
             } else {
-                for (i = 0; i < Map.marked.length; i++) {
-                    x = Map.marked[i][0];
-                    y = Map.marked[i][1];
-                    Map.currentLayer.createCell(x, y).level = -2; // normal: Dark
-                    Map.refreshCell(x, y)
+                for (var i = 0; i < Map.marked.length; i++) {
+                    var x = Map.marked[i][0];
+                    var y = Map.marked[i][1];
+                    historyLog.addOrigin(x, y);
+                    cell = Map.currentLayer.createCell(x, y);
+                    if (e.ctrlKey) {
+                        cell.level = -1; // ctrl: Low-Light
+                    } else {
+                        cell.level = -2; // normal: Dark
+                    }
+                    Map.refreshCell(x, y);
+                    historyLog.addNew(x, y);
                 }
             }
         } else {
             for (i = 0; i < Map.marked.length; i++) {
                 x = Map.marked[i][0];
                 y = Map.marked[i][1];
+                historyLog.addOrigin(x, y);
                 if (Map.layers[0].getCell(x, y) && Map.layers[0].visible) {
                     if (Map.layers[0].getCell(x, y).level < 0) {
                         continue;
                     }
                 }
+                cell = Map.currentLayer.createCell(x, y);
                 if (e.ctrlKey) {
-                    Map.currentLayer.createCell(x, y).text = Map.currentText;
-                    Map.currentLayer.createCell(x, y).foreColor = Map.currentForeColor;
-                    Map.refreshCell(x, y);
+                    cell.text = Map.currentText;
+                    cell.foreColor = Map.currentForeColor;
                 } else if (e.shiftKey) {
-                    Map.currentLayer.createCell(x, y).text = Map.currentText;
-                    Map.currentLayer.createCell(x, y).foreColor = Map.currentForeColor;
-                    Map.currentLayer.createCell(x, y).backColor = Map.currentBackColor;
-                    Map.refreshCell(x, y);
+                    cell.text = Map.currentText;
+                    cell.foreColor = Map.currentForeColor;
+                    cell.backColor = Map.currentBackColor;
                 } else {
-                    Map.currentLayer.createCell(x, y).backColor = Map.currentBackColor;
-                    Map.refreshCell(x, y);
+                    cell.backColor = Map.currentBackColor;
                 }
+                Map.refreshCell(x, y);
+                historyLog.addNew(x, y);
             }
         }
     };
     this.mouseDown = function(e) {
+        History.clearHistory();
+        History.createHistory('绘画');
         this.drawArea(e);
     };
-    this.mouseOver = function(e){
+    this.mouseOver = function(e) {
         this.removeMarkArea();
         this.markArea();
         if (Map.mouseKey == 'mouseDown') {
@@ -183,17 +190,22 @@ function Eraser() {
         if (!Map.currentLayer.visible) {
             return;
         }
+        var historyLog = History.logs[History.logIndex - 1];
         for (var i = 0; i < Map.marked.length; i++) {
             var x = Map.marked[i][0];
             var y = Map.marked[i][1];
+            historyLog.addOrigin(x, y);
             Map.currentLayer.deleteCell(x, y);
             Map.refreshCell(x, y)
+            historyLog.addNew(x, y);
         }
     };
-    this.mouseDown = function(){
+    this.mouseDown = function() {
+        History.clearHistory();
+        History.createHistory('擦除');
         this.eraseArea();
     };
-    this.mouseOver = function(){
+    this.mouseOver = function() {
         this.removeMarkArea();
         this.markArea();
         if (Map.mouseKey == 'mouseDown') {
@@ -441,6 +453,10 @@ function SelectTool() {
         }
     };
     this.copyCells = function() {
+        if (!Map.currentLayer.visible) {
+            return;
+        }
+        var historyLog = History.logs[History.logIndex - 1];
         var cell = this.getCell();
         var originCell = this.originCell;
         var xMove = cell.x - originCell.x;
@@ -451,30 +467,35 @@ function SelectTool() {
         for (var i = 0; i < markedArea.length; i++) {
             var x = markedArea[i][0];
             var y = markedArea[i][1];
+            historyLog.addOrigin(x, y);
             while (!tempArea[j].sign) {
                 j++;
             }
             if (!this.tempIsEmpty(j)) {
                 var layerCell = Map.currentLayer.createCell(x, y);
                 if (Map.currentLayer.name == 'SHADOW') {
-                    layerCell.level = tempArea[i].level;
+                    layerCell.level = tempArea[j].level;
                 } else {
-                    layerCell.text = tempArea[i].text;
-                    layerCell.foreColor = tempArea[i].foreColor;
-                    layerCell.backColor = tempArea[i].backColor;
+                    layerCell.text = tempArea[j].text;
+                    layerCell.foreColor = tempArea[j].foreColor;
+                    layerCell.backColor = tempArea[j].backColor;
                 }
                 Map.refreshCell(x, y);
+                historyLog.addNew(x, y);
             } 
             j++;
         }
     };
     this.clearCells = function() {
         if (Map.currentLayer.visible) {
+            var historyLog = History.logs[History.logIndex - 1];
             for (var i = 0; i < this.tempArea.length; i++) {
                 var x = this.tempArea[i].x;
                 var y = this.tempArea[i].y;
+                historyLog.addOrigin(x, y);
                 Map.currentLayer.deleteCell(x, y);
                 Map.refreshCell(x, y);
+                historyLog.addNew(x, y);
             }
         }
     };
@@ -502,6 +523,7 @@ function SelectTool() {
 
 function Select() {
     this.move = false;
+    this.move1 = false;
     SelectTool.call(this);
     this.markArea = function(e) {
         var cell = this.getCell();
@@ -511,14 +533,16 @@ function Select() {
                 this.area = [];
                 this.area = this.squareArea();
                 Map.setCellStatus('marked', this.area);
-            } else if (this.move == true) {
+            } else if (this.move1) {
                 var originCell = this.originCell;
                 var xMove = cell.x - originCell.x;
                 var yMove = cell.y - originCell.y;
                 this.area = [];
                 for (var i = 0; i < this.tempArea.length; i++) {
-                    if (tempArea[i].x + xMove >= 0 && tempArea[i].y + yMove >= 0) {
-                        this.area.push([tempArea[i].x + xMove, this.tempArea[i].y + yMove]);
+                    var xNew = tempArea[i].x + xMove;
+                    var yNew = tempArea[i].y + yMove;
+                    if (xNew >= 0 && yNew >= 0) {
+                        this.area.push([xNew, yNew]);
                         this.tempArea[i].sign = true;
                     } else {
                         this.tempArea[i].sign = false;
@@ -586,13 +610,16 @@ function Select() {
             this.selectSimilarCells();
         } else {
             if (this.getCell().masked) {
-                this.move = true;
+                this.move1 = true;
             }
             this.setOrigin();
             this.markArea(e);
         }
     };
     this.mouseOver = function(e){
+        if (this.move1) {
+            this.move = true;
+        }
         this.removeMarkArea();
         this.markArea(e);
     };
@@ -600,13 +627,15 @@ function Select() {
         if (e.shiftKey) {
             this.removeCells()
         } else if (this.move) {
+            History.clearHistory();
             if (e.ctrlKey) {
+                History.createHistory('复制');
                 this.copyCells();
             } else {
+                History.createHistory('移动');
                 this.moveCells();
             }
             this.moveMasked();
-            this.move = false;
         } else {
             if (e.ctrlKey) {
                 this.selectCells();
@@ -615,10 +644,14 @@ function Select() {
                 this.selectCells();
             }
         }
+        this.move = false;
+        this.move1 = false;
     };
     this.doubleClick = function() {
         this.removeAll();
         this.removeMarkArea();
+        this.move = false;
+        this.move1 = false;
     }
 }
 
@@ -675,6 +708,10 @@ function Move() {
         }
     };
     this.copyCells = function() {
+        if (Map.currentLayer.visible) {
+            return;
+        }
+        var historyLog = History.logs[History.logIndex - 1];
         var cell = this.getCell();
         var originCell = this.originCell;
         var xMove = cell.x - originCell.x;
@@ -685,6 +722,7 @@ function Move() {
         for (var i = 0; i < markedArea.length; i++) {
             var x = markedArea[i][0];
             var y = markedArea[i][1];
+            historyLog.addOrigin(x, y);
             while (!tempArea[j].sign) {
                 j++;
             }
@@ -693,13 +731,14 @@ function Move() {
             } else {
                 var layerCell = Map.currentLayer.createCell(x, y);
                 if (Map.currentLayer.name == 'SHADOW') {
-                    layerCell.level = tempArea[i].level;
+                    layerCell.level = tempArea[j].level;
                 } else {
-                    layerCell.text = tempArea[i].text;
-                    layerCell.foreColor = tempArea[i].foreColor;
-                    layerCell.backColor = tempArea[i].backColor;
+                    layerCell.text = tempArea[j].text;
+                    layerCell.foreColor = tempArea[j].foreColor;
+                    layerCell.backColor = tempArea[j].backColor;
                 }
                 Map.refreshCell(x, y);
+                historyLog.addNew(x, y);
             }
             j++;
         }
@@ -713,9 +752,12 @@ function Move() {
         this.markArea(e);
     };
     this.mouseUp = function(e) {
+        History.clearHistory();
         if (e.ctrlKey) {
+            History.createHistory('复制');
             this.copyCells();
         } else {
+            History.createHistory('移动');
             this.moveCells();
         }
         if (this.masked) {

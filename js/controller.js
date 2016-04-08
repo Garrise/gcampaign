@@ -56,21 +56,28 @@ $(document).ready(function(){
     /* Key Control */
     $(document).keydown(function(e){
         var input = $('#inputCharacter');
-        if (e.keyCode == 13) {
-            if (input.css("display") == 'none') {
-                input.css("display", 'block');
-                input.trigger('select');
-            } else {
-                var char = input.val();
-                ToolBox.character.setCharacter(char);
-                $('#character').find('span').text(char);
-                input.css("display", 'none');
-            }
-        }
-        if (e.keyCode == 81) {
-            if (Map.currentTool == 'select') {
-                ToolBox.select.removeAll();
-            }
+        switch (e.keyCode) {
+            case 13:
+                if (input.css("display") == 'none') {
+                    input.css("display", 'block');
+                    input.trigger('select');
+                } else {
+                    var char = input.val();
+                    ToolBox.character.setCharacter(char);
+                    $('#character').find('span').text(char);
+                    input.css("display", 'none');
+                }
+                break;
+            case 90:
+                if (e.ctrlKey) {
+                    History.undo();
+                }
+                break;
+            case 89:
+                if (e.ctrlKey) {
+                    History.redo();
+                }
+                break;
         }
     });
     /* Map Zooming*/
@@ -365,6 +372,23 @@ $(document).ready(function(){
                 alert("读取失败！" );
             }
         });
+    });
+
+    /* Cancel & Rewrite */
+    //Cancel
+    $('#cancel').on('click', function(){
+        History.undo();
+    });
+    //Rewrite
+    $('#rewrite').on('click', function(){
+        History.redo();
+    });
+    //Select
+    $('#history').on('click', 'div', function(){
+        var length = $('#history').children('div').length - 1;
+        var divIndex =  $(this).index();
+        var index = length - divIndex;
+        History.select(index);
     });
 });
 var selectLayer = function(div) {

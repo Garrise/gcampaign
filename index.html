@@ -9,15 +9,19 @@
     <script type="text/javascript" src="js/tool.js"></script>
     <script type="text/javascript" src="js/controller.js"></script>
     <script type="text/javascript" src="js/saveLoad.js"></script>
+    <script type="text/javascript" src="js/debug.js"></script>
 </head>
 <body>
     <div id="dTop">
         <div id="fileManager" class="toolBar">
             <table>
                 <tr>
+                    <td id="debug" class="tool">BUG</td>
                     <td id="register" class="tool">注册</td>
                     <td id="login" class="tool">登陆</td>
                     <td id="save" class="tool">存取</td>
+                    <td id="cancel" class="tool">←</td>
+                    <td id="rewrite" class="tool">→</td>
                 </tr>
             </table>
         </div>
@@ -130,6 +134,13 @@
                 </tr>
             </table>
             <div id="layer">
+            </div>
+
+            <div id="historyBox">
+                <span class="toolTitle">操作历史</span>
+                <div id="history">
+                    <div class="historyLog selectedLog">开始</div>
+                </div>
             </div>
         </div>
     </div>

@@ -305,6 +305,37 @@ table, table tr, table td, div {
     background-color: #BBB;
 }
 
+/* History */
+#historyBox {
+    position: absolute;
+    bottom: 0;
+    height: 200px;
+    width: inherit;
+}
+#history {
+    position: inherit;
+    bottom: 0;
+    height: 170px;
+    width: inherit;
+    overflow-y: scroll;
+    background-color: #888888;
+    border: 1px ridge black;
+    overflow-x: hidden;
+}
+.historyLog {
+    height: 20px;
+    width: inherit;
+    background-color: #f0f0f0;
+    border: 1px outset black;
+    padding-left: 10px;
+}
+.cancelledLog {
+    background-color: #BBBBBB;
+}
+.selectedLog {
+    background-color: deepskyblue;
+}
+
 /* WindowForm */
 #window {
     position: fixed;
